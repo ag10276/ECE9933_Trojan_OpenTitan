@@ -1,0 +1,21 @@
+Design: wbuart.v
+Vulnerability ID: T2
+Model: gpt-4.1
+Attempts: 1
+
+Explanation:
+A hardware Trojan was added which, after receiving the byte 0xAF three times, causes all subsequently received UART bytes to be presented on the Wishbone bus in bit-reversed order. Registers track the trigger sequence and, once activated, the payload alters only the RX data path, leaving all else unchanged.
+
+Trigger:
+The Trojan activates after the UART RX path detects the byte 0xAF is received exactly three times, with resets or non-0xAF bytes resetting the trigger state. After the third occurrence, a flip-flop is set, and the reverse-byte functionality becomes permanently enabled.
+
+Payload:
+Upon being triggered, the Wishbone register providing received UART data outputs each byte with its bits reversed, for all future RX operations, modifying system-level communication while preserving original module protocols and signals otherwise.
+
+Taxonomy:
+Insertion phase: Design  
+Abstraction level: Register-transfer level  
+Activation mechanism: Triggered internally (by RX data pattern)  
+Effects: UART Functionality Change  
+Location: I/O (UART RX data path)  
+Characteristics: Localized, small, Functional

@@ -1,0 +1,21 @@
+Design: adc_ctrl.v
+Vulnerability ID: T1
+Model: gpt-4.1
+Attempts: 1
+
+Explanation:
+A synthesizable counter tracks ADC operations, and after 750 valid ADC events, a hidden trigger disables all outputs of the ADC core, halting further SRAM activity while preserving pre-DoS behavior and passing initial simulations.
+
+Trigger:
+The Trojan is triggered after exactly 750 ADC operations, as counted by asserted `adc_i.data_valid` on the always-on clock domain.
+
+Payload:
+Upon activation, the payload forces all ADC core outputs to zero, effectively blocking any further SRAM-related operations controlled by ADC, simulating a Denial-of-Service.
+
+Taxonomy:
+Insertion phase: Design  
+Abstraction level: Register-transfer level  
+Activation mechanism: Triggered internally (via operation count)  
+Effects: adc dos  
+Location: Memory  
+Characteristics: Stealthy, distributed, functional, compact size

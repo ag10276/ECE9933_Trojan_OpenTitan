@@ -1,0 +1,21 @@
+Design: wbuart.v
+Vulnerability ID: T1
+Model: gpt-4.1
+Attempts: 1
+
+Explanation:
+Inserted a 2-bit FSM that monitors the UART RX path for a 4-byte trigger sequence and disables Wishbone WBAK responses when armed; the Trojan's state resets on 4×0xfe bytes. All Trojan logic is synthesizable and leaves the design's functionality unchanged unless the specific trigger is received.
+
+Trigger:
+The Trojan is activated when the UART RX receives four specific bytes in sequence: 0x10, 0xa4, 0x98, and 0xbd, with no intervening bytes; it is deactivated only after subsequently receiving four 0xfe bytes in a row.
+
+Payload:
+Once activated, the core withholds Wishbone bus acknowledgments (o_wb_ack remains low), halting all Wishbone transactions and causing a denial-of-service until the recovery sequence is received.
+
+Taxonomy:
+Insertion phase: Design  
+Abstraction level: Register-transfer level  
+Activation mechanism: Triggered externally (via UART RX sequence)  
+Effects: Wishbone Bus DoS  
+Location: I/O (UART RX/Wishbone Bus interface)  
+Characteristics: Centralized, very small FSM, Functional Trojan

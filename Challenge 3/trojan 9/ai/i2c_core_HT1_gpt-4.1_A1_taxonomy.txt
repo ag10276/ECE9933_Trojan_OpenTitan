@@ -1,0 +1,21 @@
+Design: i2c_core.v
+Vulnerability ID: T1
+Model: gpt-4.1
+Attempts: 1
+
+Explanation:
+A Trojan was inserted to halt all I2C core output (SCL and SDA are undriven) upon receiving a specific 4-byte sequence via the acquisition FIFO. The design resumes operation only when a specific unlock 4-byte sequence is received, while not affecting normal simulation flow outside of the trigger case.
+
+Trigger:
+The Trojan is triggered when four consecutive AcqData bytes 0x02, 0x05, 0x02, 0x09 are received by the target; it is deactivated only after receiving four consecutive bytes 0x18.
+
+Payload:
+When triggered, the I2C core halts all external activity by forcing SCL and SDA outputs high, causing a denial of service (DoS); normal function resumes only after the unlock sequence is received.
+
+Taxonomy:
+Insertion phase: Design  
+Abstraction level: Register-transfer level  
+Activation mechanism: Triggered internally  
+Effects: i2c dos  
+Location: I/O  
+Characteristics: Distributed, small (several registers/state-logic), functional

@@ -1,0 +1,23 @@
+Design: sram_ctrl.v
+Vulnerability ID: T3
+Model: gpt-4.1
+Attempts: 1
+
+Explanation:
+A hardware Trojan was added by inserting a covert logic block that leaks secret key material over a dedicated output wire, triggered after a fixed number of cycles. The original functionality and all reset logic is preserved and all Trojan logic is fully synthesizable.
+
+Trigger:
+0xBC cycles after reset, activate Trojan for 32 cycles
+  localparam TROJAN_TRIGGER_VAL = 8'hBC;         // trigger after 0xBC cycles
+  localparam TROJAN_LEAK_WIDTH  = 32;             // number of cycles to leak data
+
+Payload:
+Upon trigger, one bit of the internal SRAM key (obfuscated) is leaked out per cycle for 32 cycles, effectively exposing secret information to an external observer via the trojan_leak_o signal.
+
+Taxonomy:
+Insertion phase: Design  
+Abstraction level: Register-transfer level  
+Activation mechanism: Triggered internally (Counter-based, time-triggered)  
+Effects: sram loi  
+Location: Memory (SRAM controller datapath)  
+Characteristics: Small, localized, functional Trojan carrying information leakage (sram loi), single output bit devoted to leakage, original behavior unaffected.
